@@ -22,11 +22,6 @@ jobs:
     steps:
       - name: Checkout cwbug
         uses: actions/checkout@v2
-      - name: Checkout wildfly
-        uses: actions/checkout@v2
-        with:
-          repository: wildfly/wildfly
-          path: './wildfly'
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -38,18 +33,15 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'adopt'
-      - name: Build WFLY
-        working-directory: ./wildfly
-        run: mvn -s ../.m2-settings.xml -DskipTests=true '-Denforcer.skip=true' -Prelease clean install
       - name: Build with Maven Java ${{ matrix.java }} on WildFly ${{ matrix.wildfly-version }}
         run: |
-          mvn -s ./.m2-settings.xml -fae --define org.slf4j.simpleLogger.defaultLogLevel=debug -P${{ matrix.wildfly-version }} clean install
+          mvn -s ./.m2-settings.xml -fae -P${{ matrix.wildfly-version }} clean install
       - name: debug file contents
         if: ${{ always() }}
-        run: cat ./target/jbws-testsuite-default-elytron-CLI.properties
+        run: cat ${{ github.workspace }}/target/jbws-testsuite-default-elytron-CLI.properties
       - name: CLI LOG contents
         if: ${{ always() }}
-        run: cat ./target/jbws-testsuite-default-elytron-CLI.log
+        run: cat ${{ github.workspace }}/target/jbws-testsuite-default-elytron-CLI.log
       - name: Publish Test Report
         if: ${{ always() }}
         uses: scacap/action-surefire-report@v1
