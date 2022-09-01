@@ -58,12 +58,17 @@
                             <target>
                                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                                          classpathref="maven.plugin.classpath"/>
-                                <propertyfile file="${project.build.directory}${file.separator}${jbws-testsuite-default-base}-elytron-CLI.properties">
-                                    <entry key="testResourcesDir" value="${basedir}${file.separator}src${file.separator}test${file.separator}modules${file.separator}testsuite${file.separator}cxf-tests${file.separator}target"/>
-                                    <entry key="value-in-standalone" value="${jboss.home}${file.separator}standalone${file.separator}configuration${file.separator}standalone.xml"/>
-                                    <entry key="value-out-standalone" value="${jboss.home}${file.separator}standalone${file.separator}configuration${file.separator}${jbws-testsuite-default-base}.xml"/>
-                                    <entry key="value-testResourcesDir" value="${basedir}${file.separator}src${file.separator}test${file.separator}modules${file.separator}testsuite${file.separator}cxf-tests${file.separator}target"/>
 
+                                <path id="testResourcesDir">
+                                    <pathelement location="${basedir}${file.separator}src${file.separator}test${file.separator}modules${file.separator}testsuite${file.separator}cxf-tests${file.separator}target"/>
+                                </path>
+
+                                <pathconvert targetos="unix" property="testResourcesDir.unix" refid="testResourcesDir">
+                                </pathconvert>
+                                <echo message="${testResourcesDir.unix}"/>
+
+                                <propertyfile file="${project.build.directory}${file.separator}${jbws-testsuite-default-base}-elytron-CLI.properties">
+                                    <entry key="testResourcesDir" value="${testResourcesDir.unix}"/>
                                  </propertyfile>
 
                                  <copy overwrite="true"
@@ -115,9 +120,9 @@
                              <propertiesFiles>${project.build.directory}/${jbws-testsuite-default-base}-elytron-CLI.properties</propertiesFiles>
                              <jboss-home>${jboss.home}</jboss-home>
                              <stdout>${project.build.directory}/${jbws-testsuite-default-base}-elytron-CLI.log</stdout>
-                             <system-properties>
-                                 <enableServerLoggingToConsole-prop>${enableServerLoggingToConsole}</enableServerLoggingToConsole-prop>
-                             </system-properties>
+                             <!--systemProperties>
+                                 <testResourcesDir>${basedir}${file.separator}src${file.separator}test${file.separator}modules${file.separator}testsuite${file.separator}cxf-tests${file.separator}target</testResourcesDir>
+                             </systemProperties-->
                          </configuration>
                      </execution>
                  </executions>
